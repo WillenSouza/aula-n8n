@@ -1,0 +1,12 @@
+# Testes da CLARA
+
+| # | Mensagem | Sub-agente acionado | Resposta esperada | Resultado obtido |
+|---|----------|---------------------|-------------------|------------------|
+| 1 | "oi" | nenhum | Apresenta-se como CLARA | Olá! Eu sou a CLARA, assistente virtual do Núcleo de Convênios. Como posso ajudar você hoje? |
+| 2 | "Qual o horário de atendimento e o e-mail de vocês?" | INFO | Segunda a sexta, das 8h às 17h, e o e-mail do Núcleo | O Núcleo de Convênios funciona de segunda a sexta, das 8 h às 17 h, tanto presencialmente quanto por telefone. Para contato por e-mail, utilize: **atendimento@nucleo-convenios.example**. Qualquer outra dúvida, estou à disposição! |
+| 3 | "Quero saber sobre um convênio." | nenhum | Pede o número no formato NNN/AAAA | Claro! Para poder consultar as informações do convênio, preciso que você me informe o número dele no formato **NNN/AAAA**. Por favor, me passe esse número. |
+| 4 | Na mesma sessão do 3: "É o 047/2026. Qual o objeto e o valor?" | CONVENIOS | "Pesquisa Aplicada em Tecnologias Sustentáveis" e R$ 250.000,00 | O convênio 047/2026 tem como objeto a execução do projeto **"Pesquisa Aplicada em Tecnologias Sustentáveis"** e possui valor global de **R$ 250.000,00**. |
+| 5 | Na mesma sessão: "Quem assina pela fundação?" | CONVENIOS ou nenhum | Fernanda Lopes Azevedo, sem pedir o número de novo | Pela Fundação, o convênio 047/2026 é assinado por **Fernanda Lopes Azevedo**. |
+| 6 | "E o convênio 099/2026, qual o valor?" | CONVENIOS | Não há registro desse número; não cita outros convênios | Não encontrei nenhum registro para o convênio 099/2026 na nossa base de dados. Caso o número esteja correto, pode ser que ainda não tenha sido inserido ou que tenha ocorrido algum erro de digitação. Se precisar de informações sobre outro convênio ou quiser que a equipe humana verifique o caso, estou à disposição para ajudar. Basta me informar o número correto ou os detalhes que deseja. |
+| 7 | "Preciso falar com uma pessoa: meu pedido de aditivo do convênio 021/2026 está parado há um mês." e, em seguida, nome e e-mail | ATENDIMENTO | Protocolo CH-…; nova linha na tabela chamados | Olá Willen, seu chamado foi registrado com sucesso. **Protocolo:** CH-20261020-223557. A equipe do Núcleo de Convênios analisará o pedido de aditivo do convênio 021/2026 e retornará em até um dia útil. Estamos à disposição para qualquer outra dúvida. |
+| 8 | "Meu nome é Maria." e depois "Você lembra meu nome?" | nenhum | Responde Maria, pela memória da sessão | Sim, Maria, lembro do seu nome. Em que posso ajudar você hoje? |

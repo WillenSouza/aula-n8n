@@ -1,0 +1,327 @@
+{
+  "name": "Aula 10 - Ingestão dos convênios",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Base de convênio ",
+        "formDescription": "Envie os PDFs para dos convênios. O envio substitui a base anterior. ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Documentos",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "path": "base-convenios"
+        }
+      },
+      "id": "n1",
+      "name": "Enviar convênios",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "aula10-convenios"
+    },
+    {
+      "parameters": {
+        "jsCode": "const saida = []; \nfor (const item of $input.all()) { \n  for (const chave of Object.keys(item.binary ?? {})) { \n    const arquivo = item.binary[chave]; \n    saida.push({ json: { arquivo: arquivo.fileName }, binary: { data: arquivo } }); \n  }\n}\nreturn saida;"
+      },
+      "id": "n2",
+      "name": "Um item por arquivo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "n3",
+      "name": "Extrair texto",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "convenios"
+        },
+        "embeddingBatchSize": 50,
+        "clearStore": true
+      },
+      "id": "n4",
+      "name": "Inserir na base",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Base atualizada",
+        "completionMessage": "={{ $('Um item por arquivo').all().length }} arquivo(s) indexado(s) em {{ $input.all().length }} trecho(s).",
+        "options": {}
+      },
+      "id": "n5",
+      "name": "Base atualizada",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        1008,
+        0
+      ],
+      "webhookId": "86078adf-cbd3-4c86-8bd3-2df2a2bb4328"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.text }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "arquivo",
+                "value": "={{ $('Um item por arquivo').item.json.arquivo }}"
+              },
+              {
+                "name": "convenio",
+                "value": "={{ $json.text.match(/N[º°o]\\s*(\\d+\\/\\d{4})/)?.[1] ?? '' }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "n7",
+      "name": "Carregar documento",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        784,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 150,
+        "options": {}
+      },
+      "id": "n8",
+      "name": "Dividir em trechos",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        992,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "code": {
+          "supplyData": {
+            "code": "const self = this;\nconst URL = 'http://embedding_api:8003/v1/embeddings';\nconst LOTE = 32;\n\nasync function chamar(textos, tipo) {\n  const r = await self.helpers.httpRequest({\n    method: 'POST',\n    url: URL,\n    headers: { 'Content-Type': 'application/json' },\n    body: { input: textos, input_type: tipo },\n    json: true,\n  });\n  return r.data.sort((a, b) => a.index - b.index).map((d) => d.embedding);\n}\n\nreturn {\n  embedDocuments: async (textos) => {\n    const out = [];\n    for (let i = 0; i < textos.length; i += LOTE) {\n      out.push(...(await chamar(textos.slice(i, i + LOTE), 'passage')));\n    }\n    return out;\n  },\n  embedQuery: async (texto) => (await chamar([texto], 'query'))[0],\n};"
+          }
+        },
+        "inputs": {
+          "input": []
+        },
+        "outputs": {
+          "output": [
+            {
+              "type": "ai_embedding"
+            }
+          ]
+        }
+      },
+      "id": "n6",
+      "name": "Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.code",
+      "typeVersion": 1,
+      "position": [
+        608,
+        304
+      ]
+    }
+  ],
+  "pinData": {
+    "Enviar convênios": [
+      {
+        "json": {
+          "Documentos": [
+            {
+              "filename": "convenio_01.pdf",
+              "mimetype": "application/pdf",
+              "size": 2238
+            },
+            {
+              "filename": "convenio_02.pdf",
+              "mimetype": "application/pdf",
+              "size": 2260
+            },
+            {
+              "filename": "convenio_03.pdf",
+              "mimetype": "application/pdf",
+              "size": 2260
+            }
+          ],
+          "submittedAt": "2026-10-20T21:18:14.110-03:00",
+          "formMode": "test"
+        },
+        "binary": {
+          "Documentos_0": {
+            "mimeType": "application/pdf",
+            "fileType": "pdf",
+            "fileExtension": "pdf",
+            "data": "filesystem-v2",
+            "fileName": "convenio_01.pdf",
+            "id": "filesystem-v2:workflows/vx39wrkyBp83fsXO/executions/temp/binary_data/a2e1508e-c9c2-435a-ad74-f2fe23be917b",
+            "fileSize": "2.24 kB",
+            "bytes": 2238
+          },
+          "Documentos_1": {
+            "mimeType": "application/pdf",
+            "fileType": "pdf",
+            "fileExtension": "pdf",
+            "data": "filesystem-v2",
+            "fileName": "convenio_02.pdf",
+            "id": "filesystem-v2:workflows/vx39wrkyBp83fsXO/executions/temp/binary_data/e0f5669c-23a8-4e41-8599-b12ccaa5885a",
+            "fileSize": "2.26 kB",
+            "bytes": 2260
+          },
+          "Documentos_2": {
+            "mimeType": "application/pdf",
+            "fileType": "pdf",
+            "fileExtension": "pdf",
+            "data": "filesystem-v2",
+            "fileName": "convenio_03.pdf",
+            "id": "filesystem-v2:workflows/vx39wrkyBp83fsXO/executions/temp/binary_data/b3d44470-5508-4de5-920f-85d3c73124f7",
+            "fileSize": "2.26 kB",
+            "bytes": 2260
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Enviar convênios": {
+      "main": [
+        [
+          {
+            "node": "Um item por arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Um item por arquivo": {
+      "main": [
+        [
+          {
+            "node": "Extrair texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair texto": {
+      "main": [
+        [
+          {
+            "node": "Inserir na base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir na base": {
+      "main": [
+        [
+          {
+            "node": "Base atualizada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Carregar documento": {
+      "ai_document": [
+        [
+          {
+            "node": "Inserir na base",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dividir em trechos": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Carregar documento",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Inserir na base",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "555ad9ef-e15b-49c3-a1e7-9a3dc87ee442",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b19f0040ceeff9ce311a702c7a8770bc3a1fb9b025d746c0f908ebb8cba9e7cd"
+  },
+  "id": "vx39wrkyBp83fsXO",
+  "tags": [
+    {
+      "updatedAt": "2026-10-21T00:12:16.781Z",
+      "createdAt": "2026-10-21T00:12:16.781Z",
+      "id": "7cEed7VY4bKtyc5r",
+      "name": "aula10"
+    }
+  ]
+}
