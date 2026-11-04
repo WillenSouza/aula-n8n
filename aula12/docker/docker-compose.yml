@@ -1,0 +1,19 @@
+# n8n isolado da aula 12. Não compartilha container, rede, volume nem banco
+# com o nati_ambiente. Porta do host: 5679.
+name: aula12
+services:
+  n8n:
+    image: n8nio/n8n:2.22.4
+    container_name: aula12_n8n
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5679:5678"
+    environment:
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+      - N8N_HOST=${NGROK_DOMAIN}
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://${NGROK_DOMAIN}
+    volumes:
+      - aula12_n8n_data:/home/node/.n8n
+volumes:
+  aula12_n8n_data:
