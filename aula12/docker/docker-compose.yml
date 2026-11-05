@@ -10,9 +10,10 @@ services:
       - "127.0.0.1:5679:5678"
     environment:
       - GENERIC_TIMEZONE=America/Sao_Paulo
-      - N8N_HOST=${NGROK_DOMAIN}
-      - N8N_PROTOCOL=https
-      - WEBHOOK_URL=https://${NGROK_DOMAIN}
+      # Sem .env, sobe só em localhost; com NGROK_DOMAIN, passa a usar o domínio público (seção 1.4).
+      - N8N_HOST=${NGROK_DOMAIN:-localhost}
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5679}
     volumes:
       - aula12_n8n_data:/home/node/.n8n
 volumes:

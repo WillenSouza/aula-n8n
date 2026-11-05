@@ -1,0 +1,63 @@
+{
+  "name": "Aula 12 - Política de privacidade",
+  "nodes": [
+    {
+      "id": "v1",
+      "name": "Política de privacidade",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "aula12-privacidade",
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "privacidade",
+        "authentication": "none",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "v2",
+      "name": "Devolver página",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!doctype html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>Política de Privacidade – @oficial.tep</title>\n<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:1.6rem}</style>\n</head>\n<body>\n<h1>Política de Privacidade</h1>\n<p>Última atualização: 04 de novembro de 2026.</p>\n<p>Esta política descreve como a automação associada à conta do Instagram <strong>@oficial.tep</strong> trata dados pessoais. A automação é um projeto educacional da disciplina Tópicos Especiais em Programação (UNEMAT, Sinop – MT).</p>\n<h2>Responsável</h2>\n<p>Willen Silva de Souza – contato: <a href=\"mailto:willen.silva@unemat.br\">willen.silva@unemat.br</a></p>\n<h2>Dados tratados</h2>\n<p>Quando alguém comenta em uma publicação da conta ou envia uma mensagem direta, recebemos o texto da mensagem ou do comentário, o identificador da pessoa no Instagram e seu nome de usuário, que a própria plataforma fornece. Não solicitamos nem armazenamos telefone, e-mail, documentos ou outros dados pessoais.</p>\n<h2>Finalidade</h2>\n<p>Usamos esses dados apenas para responder automaticamente ao comentário ou à mensagem. Toda resposta automática se identifica como tal.</p>\n<h2>Compartilhamento</h2>\n<p>O texto das mensagens diretas pode ser enviado a um provedor de inteligência artificial (DeepSeek) para gerar a resposta. Não vendemos nem cedemos dados a terceiros para outros fins.</p>\n<h2>Armazenamento</h2>\n<p>Os dados ficam no registro de execuções da ferramenta de automação (n8n) e são apagados periodicamente. A memória da conversa do assistente é mantida apenas enquanto o programa está em execução.</p>\n<h2>Seus direitos e exclusão de dados</h2>\n<p>Você pode solicitar acesso, correção ou exclusão dos seus dados a qualquer momento, escrevendo para <a href=\"mailto:willen.silva@unemat.br\">willen.silva@unemat.br</a> com o seu nome de usuário do Instagram. Atenderemos o pedido em até 15 dias, conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).</p>\n</body>\n</html>",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Política de privacidade": {
+      "main": [
+        [
+          {
+            "node": "Devolver página",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

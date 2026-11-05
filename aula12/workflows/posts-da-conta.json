@@ -1,0 +1,106 @@
+{
+  "name": "Aula 12 - Posts da conta",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "p1",
+      "name": "Manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.instagram.com/me",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "user_id,username"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "p2",
+      "name": "Conta do Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        112
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "FSX2s9Rn9cNWD5wC",
+          "name": "Instagram TEP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.instagram.com/me/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,permalink,caption,timestamp,media_type"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "p3",
+      "name": "Posts da conta",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        112
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "FSX2s9Rn9cNWD5wC",
+          "name": "Instagram TEP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual": {
+      "main": [
+        [
+          {
+            "node": "Conta do Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conta do Instagram": {
+      "main": [
+        [
+          {
+            "node": "Posts da conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  }
+}
